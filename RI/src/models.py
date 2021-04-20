@@ -83,7 +83,10 @@ class Weighter5(Weighter):
     def getWeightsForStem(self,stem):
         tfs_doc = self.index.getTfsForStem(stem)
         idf_stem = self.index.getIDFsForStem(stem)
-        return {t:(1 + np.log(tfs_doc[t]))*idf_stem for t in tfs_doc.keys()}
+        if stem in self.index.getIndexInv().keys():
+            return {t:(1 + np.log(tfs_doc[t]))*idf_stem for t in tfs_doc.keys()}
+        else:
+            return {}
     
     def getWeightsForQuery(self,query):
         out = dict()
@@ -93,7 +96,6 @@ class Weighter5(Weighter):
             out[terme] = (1+np.log(tfs_doc))*idf_stem
         return out
     
-	
 
 class IRModel():
     

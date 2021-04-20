@@ -3,6 +3,7 @@ import TextRepresenter as TR
 from models import ModeleLangue, Okapi
 from sklearn.model_selection import KFold
 from scipy.stats import t
+import matplotlib.pyplot as plt
 
 def score_query(q):
     ps = TR.PorterStemmer()
@@ -103,7 +104,7 @@ class ndcg(EvalMesure):
 
 class EvalIRModel():
 
-    def __init__(self, collectionQuery, modelIR, k=5, beta=0.5):
+    def __init__(self, collectionQuery, modelIR, k=10, beta=0.5):
         self.k = k
         self.beta = beta
         self.model = modelIR
@@ -178,7 +179,7 @@ class EvalIRModel():
         return False
     
 
-def optimisationModeleLangue(index, start, end, n, queries, op=3):
+def optimisationModeleLangue(index, start, end, n, queries, op=3,graph=False):
     
     vals = np.arange(start, end, n)
     lamb_history = []
@@ -188,13 +189,23 @@ def optimisationModeleLangue(index, start, end, n, queries, op=3):
         lamb_history.append(e.evalModel(option=op)[0]) #prendre la precision moyenne 3
 
     bestLamb = vals[np.argmax(np.asarray(lamb_history))]
+    if graph == True:
+        plt.figure()
+        plt.plot(vals,lamb_history)
+        plt.xlabel("Lamb")
+        plt.ylabel("MAP")
+        plt.axhline(y=np.max(lamb_history), color='red', linestyle='-')
+        plt.axvline(x=bestLamb, color='purple', linestyle='--')
+        plt.show()
     return bestLamb
 
 
-def optimisationOkapi(index, start1, end1, n1, start2, end2, n2, queries, op=3):
+def optimisationOkapi(index, start1, end1, n1, start2, end2, n2, queries, op=3,graph=False):
     
     valsK = np.arange(start1, end1, n1)
+    valsK = [round(x, 1) for x in valsK]
     valsB = np.arange(start2, end2, n2)
+    valsB = [round(x, 1) for x in valsB]
     
     history = []
     couple_history = []
@@ -206,6 +217,15 @@ def optimisationOkapi(index, start1, end1, n1, start2, end2, n2, queries, op=3):
             couple_history.append((k1,b))
             
     bestCouple = couple_history[np.argmax(np.asarray(history))]
+    if graph == True:
+        plt.figure(figsize=(20, 10))
+        plt.plot(np.arange(len(couple_history)),history)
+        plt.xticks(np.arange(len(couple_history)), couple_history, rotation ='vertical')
+        plt.xlabel("(k1,b)")
+        plt.ylabel("MAP")
+        plt.axhline(y=np.max(history), color='red', linestyle='-')
+        plt.axvline(x=np.argmax(np.asarray(history)), color='purple', linestyle='--')
+        plt.show()
     return bestCouple
 
 
@@ -250,6 +270,6 @@ def crossValidationOkapi(indexer, start1, end1, n1, start2, end2, n2, queries, n
         m = Okapi(indexer,k1,b)
         e = EvalIRModel(queriesTest,m)
         out.append(e.evalModel(option=op)[0]) #prendre la precision moyenne 3
-        print(out)
+
     return np.array(out)
 

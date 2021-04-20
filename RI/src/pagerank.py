@@ -2,6 +2,7 @@
 
 import numpy as np
 
+import matplotlib.pyplot as plt
             
 
 def sousGraphe(model,query,k,n):
@@ -40,14 +41,20 @@ def pagerank(model,query,d,k,n,eps,nbiter):
     return np.array(list(tab_score_new.keys()))[sort] , np.array(list(tab_score_new.values())).mean()
         
   
-def optimisationD(model,start1,end1,n1,queries,k,n,eps,maxiter):
+def optimisationD(model,start1,end1,n1,queries,k,n,eps,maxiter,graph=False):
     
-    valsd = np.linspace(start1, end1, n1) 
+    valsd = np.arange(start1, end1, n1) 
     history = []
-    historyD = []
     for d in valsd:       
         docs,score = pagerank(model,queries,d,k,n,eps,maxiter)
         history.append(score)
-        historyD.append(d)
-    best_d = historyD[np.argmax(np.asarray(history))]
+    best_d = valsd[np.argmax(np.asarray(history))]
+    if graph == True:
+        plt.figure()
+        plt.plot(valsd,history)
+        plt.xlabel("d value")
+        plt.ylabel("score")
+        plt.axhline(y=np.max(history), color='red', linestyle='-')
+        plt.axvline(x=best_d, color='purple', linestyle='--')
+        plt.show()
     return best_d
