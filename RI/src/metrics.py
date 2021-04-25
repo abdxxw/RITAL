@@ -1,12 +1,12 @@
 import numpy as np
-import TextRepresenter as TR
-from models import ModeleLangue, Okapi
+from src.TextRepresenter import PorterStemmer
+from src.models import ModeleLangue, Okapi
 from sklearn.model_selection import KFold
 from scipy.stats import t
 import matplotlib.pyplot as plt
 
 def score_query(q):
-    ps = TR.PorterStemmer()
+    ps = PorterStemmer()
     return ps.getTextRepresentation(q)
 
 ###########################		TME3		################################ 

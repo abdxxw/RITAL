@@ -1,6 +1,6 @@
 
 
-import TextRepresenter as TR
+from src.TextRepresenter import PorterStemmer
 import numpy as np
 import json
 import re
@@ -171,7 +171,7 @@ class IndexerSimple():
     def indexation(self,dictDoc):  
         
         self.dictDoc = dictDoc
-        Trep=TR.PorterStemmer()
+        Trep=PorterStemmer()
         for i in dictDoc.keys():   
             txt = dictDoc[i].getText()
             if txt is not None:
@@ -190,17 +190,21 @@ class IndexerSimple():
                     self.indexInv[t] = {}
                     self.indexInv[t][i]=self.index[i][t]
     
-    def save(self,IndexFile,IndexInvFile):
-        with open(IndexFile,'w') as f:
+    def save(self,folder):
+        with open(folder+"Ind",'w') as f:
             json.dump(self.index, f)
-        with open(IndexInvFile,'w') as f:
+        with open(folder+"IndInv",'w') as f:
             json.dump(self.indexInv, f)
         
-    def load(self,IndexFile,IndexInvFile):
-        with open(IndexFile,'r') as f:
-            self.index = json.load(f)
-        with open(IndexFile,'r') as f:
-            self.indexInv = json.load(f)
+    def load(self,folder,docs):
+        try:
+            with open(folder+"Ind",'r') as f:
+                self.index = json.load(f)
+            with open(folder+"IndInv",'r') as f:
+                self.indexInv = json.load(f)
+            self.dictDoc = docs
+        except:
+            print("Error loading the index please check the folder you entered.")
         
         
     def getTfsForDoc(self,doc):

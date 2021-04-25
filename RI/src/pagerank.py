@@ -41,12 +41,12 @@ def pagerank(model,query,d,k,n,eps,nbiter):
     return np.array(list(tab_score_new.keys()))[sort] , np.array(list(tab_score_new.values())).mean()
         
   
-def optimisationD(model,start1,end1,n1,queries,k,n,eps,maxiter,graph=False):
+def optimisationD(model,start1,end1,n1,query,k,n,eps,maxiter,graph=False):
     
     valsd = np.arange(start1, end1, n1) 
     history = []
     for d in valsd:       
-        docs,score = pagerank(model,queries,d,k,n,eps,maxiter)
+        docs,score = pagerank(model,query,d,k,n,eps,maxiter)
         history.append(score)
     best_d = valsd[np.argmax(np.asarray(history))]
     if graph == True:
